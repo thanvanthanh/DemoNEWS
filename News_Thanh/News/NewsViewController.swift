@@ -63,18 +63,13 @@ class NewsViewController: UIViewController {
         backgroudView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0).isActive = true
         backgroudView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0).isActive = true
         
-        
         topLabel.topAnchor.constraint(equalTo: backgroudView.topAnchor, constant: 20).isActive = true
         topLabel.leadingAnchor.constraint(equalTo: backgroudView.leadingAnchor, constant: 20).isActive = true
-        
-        
         
         tableView.topAnchor.constraint(equalTo: topLabel.bottomAnchor, constant: 20).isActive = true
         tableView.leadingAnchor.constraint(equalTo: backgroudView.leadingAnchor, constant: 0).isActive = true
         tableView.trailingAnchor.constraint(equalTo: backgroudView.trailingAnchor, constant: 0).isActive = true
         tableView.bottomAnchor.constraint(equalTo: backgroudView.bottomAnchor, constant: 0).isActive = true
-        
-        
     }
     
     func getAPI(_ url: String){
@@ -83,21 +78,18 @@ class NewsViewController: UIViewController {
         AF.request(urlRequest, method: .get, encoding: URLEncoding.default).responseJSON { (reponse) in
             switch (reponse.result){
             case .success(let value):
-            print(value)
-            let json = JSON(value)
-            let news = News(json)
-            if let articles = news?.articless{
-                print(articles.count)
-                self.data = articles
-                self.tableView.reloadData()
-            
-            }
+                print(value)
+                let json = JSON(value)
+                let news = News(json)
+                if let articles = news?.articless{
+                    print(articles.count)
+                    self.data = articles
+                    self.tableView.reloadData()
+                }
             case .failure(let error):
                 print(error)
-                
             }
-        
-    }
+        }
     }
     
     
@@ -120,8 +112,9 @@ extension NewsViewController : UITableViewDelegate, UITableViewDataSource {
     }
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         print(data[indexPath.row].title!)
-        if let url = URL(string: data[indexPath.row].url ?? "") {
-            UIApplication.shared.open(url)
-        }
+        guard let url = URL(string: data[indexPath.row].url ?? "") else { return }
+        
+        let vc = NewsDetailViewController(url: url)
+        navigationController?.pushViewController(vc, animated: true)
     }
 }
