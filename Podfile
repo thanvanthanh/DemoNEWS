@@ -9,5 +9,6 @@ target 'News_Thanh' do
 	pod 'Alamofire'
 	pod 'SwiftyJSON'
 	pod 'Kingfisher'
+	pod 'DGElasticPullToRefresh'
 
 end

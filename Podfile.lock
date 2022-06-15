@@ -1,24 +1,28 @@
 PODS:
   - Alamofire (5.4.2)
+  - DGElasticPullToRefresh (1.1)
   - Kingfisher (6.2.1)
   - SwiftyJSON (5.0.1)
 
 DEPENDENCIES:
   - Alamofire
+  - DGElasticPullToRefresh
   - Kingfisher
   - SwiftyJSON
 
 SPEC REPOS:
   trunk:
     - Alamofire
+    - DGElasticPullToRefresh
     - Kingfisher
     - SwiftyJSON
 
 SPEC CHECKSUMS:
   Alamofire: bfbc4c2fe5909b1d94fb4ef2277c6b3727ef5dae
+  DGElasticPullToRefresh: 28f11a6026302a90f8ffebbc6e24748e584dddd3
   Kingfisher: e71c6fac2aebb1262888cabc2cb13d313362a48f
   SwiftyJSON: 2f33a42c6fbc52764d96f13368585094bfd8aa5e
 
-PODFILE CHECKSUM: cc0a4b9a85163e68b6caf30e705659de11172b0b
+PODFILE CHECKSUM: f8ceeb2c4d9573481a4dd4777c35075a2c3d21e5
 
 COCOAPODS: 1.11.3

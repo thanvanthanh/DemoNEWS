@@ -9,6 +9,7 @@ import UIKit
 import Alamofire
 import Kingfisher
 import SwiftyJSON
+import DGElasticPullToRefresh
 
 class NewsViewController: UIViewController {
     
@@ -46,12 +47,13 @@ class NewsViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
-        
-        getAPI("https://newsapi.org/v2/top-headlines?sources=bbc-news,cbc-news,nbc-news,fox-news,mtv-news=&page=1&pageSize=10&apiKey=bb9bf177194b4942b041631cca42adee")
+        navigationController?.navigationBar.barTintColor = UIColor(red: 57/255.0, green: 67/255.0, blue: 89/255.0, alpha: 1.0)
+        getAPI()
         tableView.delegate = self
         tableView.dataSource = self
         tableView.register(NewSTableViewCell.self, forCellReuseIdentifier: "NewSTableViewCell")
         setupLayout()
+        pullToRefresh()
     }
     func setupLayout(){
         view.addSubview(backgroudView)
@@ -72,8 +74,26 @@ class NewsViewController: UIViewController {
         tableView.bottomAnchor.constraint(equalTo: backgroudView.bottomAnchor, constant: 0).isActive = true
     }
     
-    func getAPI(_ url: String){
-        let urlRequest = URL(string: url)!
+    func pullToRefresh() {
+        let loadingView = DGElasticPullToRefreshLoadingViewCircle()
+        loadingView.tintColor = UIColor(red: 78/255.0, green: 221/255.0, blue: 200/255.0, alpha: 1.0)
+        tableView.dg_addPullToRefreshWithActionHandler({ [weak self] () -> Void in
+            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + Double(Int64(1.5 * Double(NSEC_PER_SEC))) / Double(NSEC_PER_SEC), execute: { [self] in
+                self?.tableView.reloadData()
+                self?.getAPI()
+                self?.tableView.dg_stopLoading()
+            })
+        }, loadingView: loadingView)
+        tableView.dg_setPullToRefreshFillColor(UIColor(red: 57/255.0, green: 67/255.0, blue: 89/255.0, alpha: 1.0))
+        tableView.dg_setPullToRefreshBackgroundColor(tableView.backgroundColor!)
+    }
+    
+    deinit {
+        tableView.dg_removePullToRefresh()
+    }
+    
+    func getAPI(){
+        let urlRequest = URL(string: "https://newsapi.org/v2/top-headlines?sources=bbc-news,cbc-news,nbc-news,fox-news,mtv-news=&page=1&pageSize=10&apiKey=bb9bf177194b4942b041631cca42adee")!
         
         AF.request(urlRequest, method: .get, encoding: URLEncoding.default).responseJSON { (reponse) in
             switch (reponse.result){
