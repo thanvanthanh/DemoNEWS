@@ -12,7 +12,8 @@ import SwiftyJSON
 import DGElasticPullToRefresh
 
 class NewsViewController: UIViewController {
-    
+    var seconds = 6
+
     var data = [Articles]()
 
     let backgroudView: UIView = {
@@ -20,6 +21,21 @@ class NewsViewController: UIViewController {
         view.translatesAutoresizingMaskIntoConstraints = false
         view.backgroundColor = .white
         return view
+    }()
+    
+    let countTime : UILabel = {
+        let lable = UILabel()
+        lable.translatesAutoresizingMaskIntoConstraints = false
+        lable.text = ""
+        lable.textColor = .white
+        lable.tintColor = .black
+        lable.isHidden = true
+        lable.textAlignment = .center
+//        lable.sizeToFit()
+        lable.font = UIFont(name: "Chalkduster", size: 200)
+        
+        return lable
+        
     }()
     
     let topLabel : UILabel = {
@@ -48,17 +64,39 @@ class NewsViewController: UIViewController {
         super.viewDidLoad()
         view.backgroundColor = .white
         navigationController?.navigationBar.barTintColor = UIColor(red: 57/255.0, green: 67/255.0, blue: 89/255.0, alpha: 1.0)
+        backgroudView.backgroundColor = UIColor(red: 57/255.0, green: 67/255.0, blue: 89/255.0, alpha: 1.0)
         getAPI()
         tableView.delegate = self
         tableView.dataSource = self
         tableView.register(NewSTableViewCell.self, forCellReuseIdentifier: "NewSTableViewCell")
         setupLayout()
         pullToRefresh()
+        let navButtonItem = UIBarButtonItem(title: "Quit Game :)", style: .plain, target: self, action: #selector(exitApp))
+        navigationItem.leftBarButtonItem = navButtonItem
+    }
+    
+    @objc func exitApp() {
+        Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in
+            self.seconds -= 1
+            self.countTime.text = "\(self.seconds)"
+            self.countTime.isHidden = false
+            self.tableView.isHidden = true
+            self.backgroudView.backgroundColor = .red
+            self.navigationController?.navigationBar.barTintColor = .red
+            if self.seconds == 0 {
+                timer.invalidate()
+                exit(0)
+            } else {
+                print(self.seconds)
+            }
+        }
+        
     }
     func setupLayout(){
         view.addSubview(backgroudView)
         backgroudView.addSubview(topLabel)
         backgroudView.addSubview(tableView)
+        backgroudView.addSubview(countTime)
         
         backgroudView.topAnchor.constraint(equalTo: view.layoutMarginsGuide.topAnchor, constant: 0).isActive = true
         backgroudView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 0).isActive = true
@@ -72,6 +110,11 @@ class NewsViewController: UIViewController {
         tableView.leadingAnchor.constraint(equalTo: backgroudView.leadingAnchor, constant: 0).isActive = true
         tableView.trailingAnchor.constraint(equalTo: backgroudView.trailingAnchor, constant: 0).isActive = true
         tableView.bottomAnchor.constraint(equalTo: backgroudView.bottomAnchor, constant: 0).isActive = true
+        
+        countTime.centerXAnchor.constraint(equalTo: tableView.centerXAnchor, constant: 0).isActive = true
+        countTime.centerYAnchor.constraint(equalTo: tableView.centerYAnchor, constant: 0).isActive = true
+        countTime.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.8).isActive = true
+        countTime.heightAnchor.constraint(equalTo: countTime.widthAnchor, multiplier: 1).isActive = true
     }
     
     func pullToRefresh() {
@@ -93,7 +136,7 @@ class NewsViewController: UIViewController {
     }
     
     func getAPI(){
-        let urlRequest = URL(string: "https://newsapi.org/v2/top-headlines?sources=bbc-news,cbc-news,nbc-news,fox-news,mtv-news=&page=1&pageSize=10&apiKey=bb9bf177194b4942b041631cca42adee")!
+        let urlRequest = URL(string: "https://newsapi.org/v2/top-headlines?sources=bbc-news,cbc-news,nbc-news,fox-news,mtv-news=&page=1&pageSize=20&apiKey=bb9bf177194b4942b041631cca42adee")!
         
         AF.request(urlRequest, method: .get, encoding: URLEncoding.default).responseJSON { (reponse) in
             switch (reponse.result){
